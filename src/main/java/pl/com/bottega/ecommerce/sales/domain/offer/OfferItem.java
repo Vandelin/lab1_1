@@ -16,42 +16,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-public class OfferItem {
-
-    private final Product product = new Product();
-    private final Discount discount = new Discount();
-
-    private BigDecimal productPrice;
+public class OfferItem extends Money {
 
     private int quantity;
 
 
-    public OfferItem(String productId, BigDecimal productPrice, String productName, Date productSnapshotDate, String productType,
-                     int quantity) {
-        this(productId, productPrice, productName, productSnapshotDate, productType, quantity, null, null);
-    }
-
-    public OfferItem(String productId, BigDecimal productPrice, String productName, Date productSnapshotDate, String productType,
-                     int quantity, BigDecimal discount, String discountCause) {
+    public OfferItem(int quantity, BigDecimal totalCost, String currency) {
 
         this.quantity = quantity;
-        this.discount.discountCause = discountCause;
+        final Product product = new Product(currency, totalCost);
+        final Discount discount = new Discount(currency, totalCost);
 
         BigDecimal discountValue = new BigDecimal(0);
         if (discount != null) {
-            discountValue = discountValue.subtract(discount);
+            discountValue = discountValue.subtract(discount.getDiscountValue());
         }
 
-        this.totalCost = productPrice.multiply(new BigDecimal(quantity))
+        this.totalCost = product.getProductPrice().multiply(new BigDecimal(quantity))
                 .subtract(discountValue);
     }
 
-    public String getProductId() {
-        return product.getProductId();
-    }
 
     public BigDecimal getTotalCost() {
-        return totalCost;
+        return super.getValue();
     }
 
     public int getQuantity() {
