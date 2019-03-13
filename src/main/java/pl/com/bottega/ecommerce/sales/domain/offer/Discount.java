@@ -2,17 +2,17 @@ package pl.com.bottega.ecommerce.sales.domain.offer;
 
 import java.math.BigDecimal;
 
-public class Discount extends Money {
+public class Discount {
     private String discountCause;
+    private Money money;
 
     public Discount(String discountCause, BigDecimal discountValue, String currency) {
-        super(currency, discountValue);
+        money.setValue(discountValue);
+        money.setCurrency(currency);
         this.discountCause = discountCause;
     }
 
-    public Discount(String currency, BigDecimal totalCost) {
-        super(currency, totalCost);
-    }
+    public Discount() { }
 
 
     public String getDiscountCause() {
@@ -23,16 +23,8 @@ public class Discount extends Money {
         this.discountCause = discountCause;
     }
 
-    @Override
-    public String getCurrency() {
-        return super.getCurrency();
+    public Money getDiscountValue() {
+        return money;
     }
 
-    public BigDecimal getDiscountValue() {
-        return super.getValue();
-    }
-
-    public void setDiscountValue(BigDecimal value) {
-        super.setValue(value);
-    }
 }
