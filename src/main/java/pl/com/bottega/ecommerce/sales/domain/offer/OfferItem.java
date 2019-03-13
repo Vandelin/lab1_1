@@ -15,29 +15,41 @@ package pl.com.bottega.ecommerce.sales.domain.offer;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class OfferItem extends Money {
+public class OfferItem {
 
+    public Money money;
     final Product product = new Product(getCurrency(), getTotalCost());
     final Discount discount = new Discount(getCurrency(), getTotalCost());
     private int quantity;
 
-    public OfferItem(int quantity, String currency) {
-        super(currency, BigDecimal.valueOf(0));
+    public OfferItem(int quantity, String currency, BigDecimal totalCost) {
         this.quantity = quantity;
-
+        setTotalCost(totalCost);
+        setCurrency(currency);
 
         BigDecimal discountValue = new BigDecimal(0);
         if (discount != null) {
             discount.setDiscountValue(discountValue.subtract(discount.getDiscountValue()));
         }
-        setValue(product.getProductPrice().multiply(new BigDecimal(quantity))
+        setTotalCost(product.getProductPrice().multiply(new BigDecimal(quantity))
                 .subtract(discount.getDiscountValue()));
 
     }
 
-
     public BigDecimal getTotalCost() {
-        return super.getValue();
+        return money.getValue();
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        money.setValue(totalCost);
+    }
+
+    public String getCurrency() {
+        return money.getCurrency();
+    }
+
+    public void setCurrency(String currency) {
+        money.setCurrency(currency);
     }
 
     public int getQuantity() {
