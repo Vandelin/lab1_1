@@ -13,27 +13,26 @@
 package pl.com.bottega.ecommerce.sales.domain.offer;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Objects;
 
 public class OfferItem extends Money {
 
+    final Product product = new Product(getCurrency(), getTotalCost());
+    final Discount discount = new Discount(getCurrency(), getTotalCost());
     private int quantity;
 
-
-    public OfferItem(int quantity, BigDecimal totalCost, String currency) {
-
+    public OfferItem(int quantity, String currency) {
+        super(currency, BigDecimal.valueOf(0));
         this.quantity = quantity;
-        final Product product = new Product(currency, totalCost);
-        final Discount discount = new Discount(currency, totalCost);
+
 
         BigDecimal discountValue = new BigDecimal(0);
         if (discount != null) {
-            discountValue = discountValue.subtract(discount.getDiscountValue());
+            discount.setDiscountValue(discountValue.subtract(discount.getDiscountValue()));
         }
+        setValue(product.getProductPrice().multiply(new BigDecimal(quantity))
+                .subtract(discount.getDiscountValue()));
 
-        this.totalCost = product.getProductPrice().multiply(new BigDecimal(quantity))
-                .subtract(discountValue);
     }
 
 
@@ -46,19 +45,18 @@ public class OfferItem extends Money {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(product, discount, productPrice, quantity);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof OfferItem)) return false;
         OfferItem offerItem = (OfferItem) o;
         return quantity == offerItem.quantity &&
                 Objects.equals(product, offerItem.product) &&
-                Objects.equals(discount, offerItem.discount) &&
-                Objects.equals(productPrice, offerItem.productPrice);
+                Objects.equals(discount, offerItem.discount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quantity, product, discount);
     }
 
     /**
@@ -67,11 +65,11 @@ public class OfferItem extends Money {
      * @return
      */
     public boolean sameAs(OfferItem other, double delta) {
-        if (productPrice == null) {
-            if (other.productPrice != null) {
+        if (product.getProductPrice() == null) {
+            if (other.product.getProductPrice() != null) {
                 return false;
             }
-        } else if (!productPrice.equals(other.productPrice)) {
+        } else if (!product.getProductPrice().equals(other.product.getProductPrice())) {
             return false;
         }
         if (product.getProductName() == null) {
@@ -99,12 +97,12 @@ public class OfferItem extends Money {
 
         BigDecimal max;
         BigDecimal min;
-        if (totalCost.compareTo(other.totalCost) > 0) {
-            max = totalCost;
-            min = other.totalCost;
+        if (getTotalCost().compareTo(other.getTotalCost()) > 0) {
+            max = getTotalCost();
+            min = other.getTotalCost();
         } else {
-            max = other.totalCost;
-            min = totalCost;
+            max = other.getTotalCost();
+            min = getTotalCost();
         }
 
         BigDecimal difference = max.subtract(min);

@@ -45,4 +45,20 @@ public class Product extends Money {// product
     public BigDecimal getProductPrice() {
         return super.getValue();
     }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductSnapshotDate(Date productSnapshotDate) {
+        this.productSnapshotDate = productSnapshotDate;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
 }
