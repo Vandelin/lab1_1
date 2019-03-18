@@ -17,35 +17,33 @@ import java.util.Objects;
 
 public class OfferItem {
 
-    public Money money;
-    final Product product = new Product();
-    final Discount discount = new Discount();
+    private Money money;
+    Product product;
+    private Discount discount;
     private int quantity;
 
-    public OfferItem(int quantity, String currency, BigDecimal totalCost) {
-        this.quantity = quantity;
-        money.setValue(totalCost);
-        setCurrency(currency);
+    public OfferItem(){}
 
-        BigDecimal discountValue = new BigDecimal(0);
-        if (discount != null) {
-            discount.getDiscountValue().setValue(discountValue.subtract(discount.getDiscountValue().getValue()));
-        }
+    public OfferItem(int quantity, String currency, Product product, Discount discount) {
+        this.quantity = quantity;
+        setCurrency(currency);
+        this.product = product;
+        this.discount = discount;
+
         money.setValue(product.getProductPrice().getValue().multiply(new BigDecimal(quantity))
                 .subtract(discount.getDiscountValue().getValue()));
 
     }
 
-    public Money getTotalCost() {
+    private Money getTotalCost() {
         return money;
     }
-
 
     public String getCurrency() {
         return money.getCurrency();
     }
 
-    public void setCurrency(String currency) {
+    private void setCurrency(String currency) {
         money.setCurrency(currency);
     }
 
@@ -73,7 +71,7 @@ public class OfferItem {
      * @param delta acceptable percentage difference
      * @return
      */
-    public boolean sameAs(OfferItem other, double delta) {
+    boolean sameAs(OfferItem other, double delta) {
         if (product.getProductPrice() == null) {
             if (other.product.getProductPrice() != null) {
                 return false;
@@ -96,7 +94,7 @@ public class OfferItem {
         } else if (!product.getProductId().equals(other.product.getProductId())) {
             return false;
         }
-        if (product.getProductType() != other.product.getProductType()) {
+        if (!product.getProductType().equals(other.product.getProductType())) {
             return false;
         }
 
